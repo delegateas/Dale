@@ -1,0 +1,12 @@
+framework: net46
+
+source https://www.nuget.org/api/v2
+nuget FAKE
+nuget FSharp.Azure.Storage
+nuget FSharp.Core
+nuget FSharp.Data
+nuget Microsoft.AspNet.WebApi.Client
+nuget Microsoft.AspNet.WebApi.Core
+nuget Microsoft.AspNet.WebApi.SelfHost
+nuget Microsoft.AspNet.WebApi.Tracing
+nuget Microsoft.IdentityModel.Clients.ActiveDirectory

@@ -1,0 +1,6 @@
+FSharp.Core
+Microsoft.AspNet.WebApi.Core
+Microsoft.AspNet.WebApi.Client
+Microsoft.AspNet.WebApi.SelfHost
+Microsoft.IdentityModel.Clients.ActiveDirectory
+Microsoft.AspNet.WebApi.Tracing

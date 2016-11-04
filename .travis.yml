@@ -1,0 +1,9 @@
+language: csharp
+sudo: required
+dist: trusty 
+
+mono:
+  - latest
+
+script: 
+- ./build.sh
