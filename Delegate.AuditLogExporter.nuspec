@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">    
+  <id>@project@</id>
+  <version>@build.number@</version>
+  <authors>@authors@</authors>
+  <owners>@authors@</owners>
+  <summary>@summary@</summary>
+  <licenseUrl>https://github.com/delegateas/dale/blob/master/LICENSE.txt</licenseUrl>
+  <projectUrl>https://github.com/delegateas/dale</projectUrl>
+  <iconUrl>https://avatars1.githubusercontent.com/u/7015300</iconUrl>
+  <requireLicenseAcceptance>false</requireLicenseAcceptance>
+  <description>@description@</description>
+  <releaseNotes>@releaseNotes@</releaseNotes>
+  <copyright>Copyright Delegate A/S 2016</copyright>    
+  <tags>Delegate O365 Audit</tags>
+  @dependencies@
+  @references@
+  </metadata>
+  @files@
+</package>

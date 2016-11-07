@@ -10,3 +10,4 @@ nuget Microsoft.AspNet.WebApi.Core
 nuget Microsoft.AspNet.WebApi.SelfHost
 nuget Microsoft.AspNet.WebApi.Tracing
 nuget Microsoft.IdentityModel.Clients.ActiveDirectory
+nuget Nuget.CommandLine
