@@ -18,7 +18,7 @@ let appReferences  =
 let allPackageFiles = [ "build/Dale.dll" ]
 
 // version info
-let version = "0.0.1"
+let version = "0.0.2"
 
 // Targets
 Target "Clean" (fun _ ->
@@ -44,16 +44,14 @@ Target "CreatePackage" (fun _ ->
   NuGet (fun p ->
     {p with
       Authors = [ "Delegate" ]
-      Project = "Dale"
+      Project = "Delegate.AuditLogExporter"
       Description = "Export Office365 Audit logs via Webhook"
       OutputPath = packagingOutputDir
       Summary = "Export Office365 Audit logs via Webhook"
       WorkingDir = packagingWorkDir
       Version = version
       Dependencies =
-        ["FSharp.Core", GetPackageVersion "./packages/" "FSharp.Core"
-         "FSharp.Data", GetPackageVersion "./packages/" "FSharp.Data"
-         "FSharp.Azure.Storage", GetPackageVersion "./packages/" "FSharp.Azure.Storage"
+        ["FSharp.Azure.Storage", GetPackageVersion "./packages/" "FSharp.Azure.Storage"
          "Microsoft.IdentityModel.Clients.ActiveDirectory", GetPackageVersion "./packages/" "Microsoft.IdentityModel.Clients.ActiveDirectory"
          "Microsoft.AspNet.WebApi.Client", GetPackageVersion "./packages/" "Microsoft.AspNet.WebApi.Client"]
       AccessKey = ""

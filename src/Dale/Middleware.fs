@@ -31,7 +31,7 @@ module Middleware =
       let valid =
         json
         |> Seq.map (fun i -> not (isNull i.ContentUri))
-        |> Seq.reduce(fun a b -> a && b)
+        |> Seq.reduce (&&)
       match valid with
         | true -> inner req
         | false -> async {
