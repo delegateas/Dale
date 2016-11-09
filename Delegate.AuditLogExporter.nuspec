@@ -17,5 +17,7 @@
   @dependencies@
   @references@
   </metadata>
-  @files@
+  <files>
+    <file src="Dale.dll" target="lib/net46" />
+  </files>
 </package>

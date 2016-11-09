@@ -8,17 +8,15 @@ open Fake
 let buildDir  = "./build/"
 let deployDir = "./deploy/"
 let packagingDir = "./pkg/"
-let packagingOutputDir = "./pkg/release/"
-let packagingWorkDir = "./pkg/build/"
 
 // Filesets
 let appReferences  =
     !! "/**/*.csproj"
     ++ "/**/*.fsproj"
-let allPackageFiles = [ "build/Dale.dll" ]
+let allPackageFiles = [ "./build/Dale.dll" ]
 
 // version info
-let version = "0.0.2"
+let version = "0.0.5"
 
 // Targets
 Target "Clean" (fun _ ->
@@ -46,10 +44,11 @@ Target "CreatePackage" (fun _ ->
       Authors = [ "Delegate" ]
       Project = "Delegate.AuditLogExporter"
       Description = "Export Office365 Audit logs via Webhook"
-      OutputPath = packagingOutputDir
       Summary = "Export Office365 Audit logs via Webhook"
-      WorkingDir = packagingWorkDir
       Version = version
+      OutputPath = packagingDir
+      WorkingDir = packagingDir
+      NoDefaultExcludes = true
       Dependencies =
         ["FSharp.Azure.Storage", GetPackageVersion "./packages/" "FSharp.Azure.Storage"
          "Microsoft.IdentityModel.Clients.ActiveDirectory", GetPackageVersion "./packages/" "Microsoft.IdentityModel.Clients.ActiveDirectory"
@@ -57,7 +56,7 @@ Target "CreatePackage" (fun _ ->
       AccessKey = ""
       PublishUrl = "nuget.org"
       Publish = true })
-    "Delegate.AuditLogExporter.nuspec"
+    "./Delegate.AuditLogExporter.nuspec"
 )
 
 // Build order
