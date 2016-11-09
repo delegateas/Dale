@@ -16,7 +16,11 @@ let appReferences  =
 let allPackageFiles = [ "./build/Dale.dll" ]
 
 // version info
-let version = "0.0.5"
+let version = "0.0.9"
+
+let dependencies =
+  Paket.GetDependenciesForReferencesFile "./src/Dale/paket.references"
+  |> Array.toList
 
 // Targets
 Target "Clean" (fun _ ->
@@ -36,7 +40,7 @@ Target "Deploy" (fun _ ->
 )
 
 Target "CreatePackage" (fun _ ->
-    // Copy all the package files into a package folder
+  // Copy all the package files into a package folder
   CopyFiles packagingDir allPackageFiles
 
   NuGet (fun p ->
@@ -49,13 +53,10 @@ Target "CreatePackage" (fun _ ->
       OutputPath = packagingDir
       WorkingDir = packagingDir
       NoDefaultExcludes = true
-      Dependencies =
-        ["FSharp.Azure.Storage", GetPackageVersion "./packages/" "FSharp.Azure.Storage"
-         "Microsoft.IdentityModel.Clients.ActiveDirectory", GetPackageVersion "./packages/" "Microsoft.IdentityModel.Clients.ActiveDirectory"
-         "Microsoft.AspNet.WebApi.Client", GetPackageVersion "./packages/" "Microsoft.AspNet.WebApi.Client"]
+      Dependencies = dependencies
       AccessKey = ""
       PublishUrl = "nuget.org"
-      Publish = true })
+      Publish = false })
     "./Delegate.AuditLogExporter.nuspec"
 )
 

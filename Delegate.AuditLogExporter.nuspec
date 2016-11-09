@@ -18,6 +18,6 @@
   @references@
   </metadata>
   <files>
-    <file src="Dale.dll" target="lib/net46" />
+    <file src="Dale.dll" target="lib/net45" />
   </files>
 </package>
