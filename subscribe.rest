@@ -1,0 +1,43 @@
+# Variables
+:tenantid = 00000000-0000-0000-0000-000000000000
+:url = https://webhook.myapp.com/o365/
+:authid = o365activityapinotification
+:tenant = contoso.onmicrosoft.com
+:clientid = 00000000-0000-0000-0000-000000000000
+:clientsecret = BecHmLi6my8aotTFfsYZ4oa4mbHdO/pm83H220phaIg=
+
+# Get an oauth token
+POST https://login.microsoftonline.com/:tenant/oauth2/token
+Content-Type: application/x-www-form-urlencoded
+grant_type=client_credentials&client_id=:clientid&client_secret=:clientsecret&resource=https://manage.office.com
+#
+
+# Paste result of above Request here
+
+:authtoken =
+
+# Register a new webhook
+POST https://manage.office.com/api/v1.0/:tenantid/activity/feed/subscriptions/start?contentType=Audit.SharePoint
+Content-Type: application/json; utf-8
+Authorization: :authtoken
+{
+    "webhook" : {
+        "address": ":url",
+        "authId": ":authid",
+        "expiration": ""
+    }
+}
+
+
+
+# Register a new webhook
+POST https://manage.office.com/api/v1.0/:tenantid/activity/feed/subscriptions/start?contentType=Audit.SharePoint
+Content-Type: application/json; utf-8
+Authorization: Bearer :authtoken
+{
+    "webhook" : {
+        "address": ":url",
+        "authId": ":authid",
+        "expiration": ""
+    }
+}
