@@ -11,13 +11,13 @@ Take note of your App's ClientId.
 
 You will also need to generate a key for the App (The ClientSecret), also depicted in the guide linked above. Make sure to copy the ClientSecret, because you will need it later and you cannot see it via the portal again after leaving the page.
 
-The next step is to assign the necessary permissions to the App. This is also elaborated upon in the guide, under the heading, "-Specify the permissions your app requires to access the Office 365 Management APIs-".
+The next step is to assign the necessary permissions to the App. This is also elaborated upon in the guide, under the heading, __Specify the permissions your app requires to access the Office 365 Management APIs__.
 
 Finally, before leaving the portal, you should take note of the Tenant-Id for your Office 365 tenant, as you will need this for registering the WebHook later.
 
 The tenant ID can be obtained from the URL when you are browsing the Active Directory blades in the Classic Portal. The URL will appear as below:
 
-    https://manage.windowsazure.com/tenantname#Workspaces/ActiveDirectoryExtension/Directory/*00000000-0000-0000-0000-000000000000*/directoryQuickStart
+    https://manage.windowsazure.com/tenantname#Workspaces/ActiveDirectoryExtension/Directory/00000000-0000-0000-0000-000000000000/directoryQuickStart
     
 That GUID is the Id for the Tenant.
 
