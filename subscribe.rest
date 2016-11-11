@@ -27,17 +27,3 @@ Authorization: :authtoken
         "expiration": ""
     }
 }
-
-
-
-# Register a new webhook
-POST https://manage.office.com/api/v1.0/:tenantid/activity/feed/subscriptions/start?contentType=Audit.SharePoint
-Content-Type: application/json; utf-8
-Authorization: Bearer :authtoken
-{
-    "webhook" : {
-        "address": ":url",
-        "authId": ":authid",
-        "expiration": ""
-    }
-}
