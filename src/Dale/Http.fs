@@ -26,7 +26,7 @@ module Http =
   type Notifications = JsonProvider<NotifySchema>
 
   let collectBatches (req :HttpRequestMessage) =
-    let body = (req.Content.ToString())
+    let body = req.Content.ReadAsStringAsync().Result
     let json = Notifications.Parse body
     json
     |> Seq.map (fun i -> i.ContentUri)
