@@ -51,3 +51,5 @@ module Middleware =
     |> isValidation
     |> methodAllowed
 
+  let interopHandler req =
+    wrappedAuditHandler req |> Async.StartAsTask
