@@ -42,38 +42,32 @@ module Http =
     res.AccessToken
 
   let fetchBatch oauthToken url =
-    async {
-      let json =
-        Http.RequestString(url, httpMethod = "GET",
-                           headers = [Accept "application/json"
-                                      Authorization ("Bearer " + oauthToken)])
-      return JsonValue.Parse json
-    }
+    let json =
+      Http.RequestString(url, httpMethod = "GET")
+                         headers = [Accept "application/json"
+                                    Authorization ("Bearer " + oauthToken)])
+    JsonValue.Parse json
 
   let mapToAuditWrites (json :JsonValue) :seq<AuditWrite> =
-    match json with
-      | JsonValue.Array [| data |] ->
-        data.AsArray()
-        |> Seq.map (fun e ->
-                     {UserId = e.GetProperty("UserId").ToString();
-                      AuditEvent =
-                        {Id   = e.GetProperty("Id").ToString();
-                         Time = e.GetProperty("CreationTime").ToString();
-                         Json = e.ToString() }})
-      | _ -> Seq.empty
+    json.AsArray()
+    |> Seq.map (fun e ->
+                 let k = e.GetProperty("CreationTime").AsDateTime().ToShortDateString()
+                 {UserId = e.GetProperty("UserId").ToString();
+                  AuditEvent =
+                    {ServiceType = e.GetProperty("Workload").ToString();
+                     Id   = e.GetProperty("Id").ToString();
+                     Time = e.GetProperty("CreationTime").ToString();
+                     Json = e.ToString() }})
 
   let doExport (batches :seq<string>) =
     async {
       let token = fetchAuthToken
-      let fetchBatchWithToken = fetchBatch token
-      batches
-      |> Seq.map fetchBatchWithToken
-      |> Async.Parallel
-      |> Async.RunSynchronously
-      |> Seq.map mapToAuditWrites
-      |> Seq.map writeToAzure
-      |> Async.Parallel
-      |> Async.RunSynchronously
-      |> ignore
+      let fetchBatchWithToken = fun (batch :string) -> fetchBatch token batch
+      let results =
+        batches
+        |> Seq.map fetchBatchWithToken
+        |> Seq.map mapToAuditWrites
+        |> Seq.map writeToAzure
+      printfn "%A" results
     }
 

@@ -41,7 +41,7 @@ module Middleware =
   let auditHandler (req :HttpRequestMessage) :Async<HttpResponseMessage> =
     async {
       let batches = collectBatches req
-      doExport batches |> ignore
+      doExport batches |> Async.Start
       return new HttpResponseMessage(HttpStatusCode.OK)
     }
 

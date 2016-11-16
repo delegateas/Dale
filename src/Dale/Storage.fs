@@ -11,6 +11,7 @@ module Storage =
   type AuditEvent =
     { [<PartitionKey>] Time :string
       [<RowKey>] Id :string
+      ServiceType :string
       Json :string }
 
   type AuditWrite =
@@ -26,14 +27,13 @@ module Storage =
     "Audit" + cand
 
   let writeToAzure (events :seq<AuditWrite>) =
-    async {
-      let conn = Environment.GetEnvironmentVariable("AzureConnectionString")
-      let account = CloudStorageAccount.Parse conn
-      let tableClient = account.CreateCloudTableClient()
-      events
-      |> Seq.map (fun e ->
-                   let tableName = userTableName e.UserId
-                   let inUserTable entry = inTable tableClient tableName entry
-                   e.AuditEvent |> Insert |> inUserTable) |> ignore
-      ()
-    }
+    let conn = Environment.GetEnvironmentVariable("AzureConnectionString")
+    let account = CloudStorageAccount.Parse conn
+    let tableClient = account.CreateCloudTableClient()
+    events
+    |> Seq.map (fun e ->
+                 let tableName = userTableName e.UserId
+                 let table = tableClient.GetTableReference(tableName)
+                 table.CreateIfNotExists() |> ignore
+                 let inUserTable entry = inTable tableClient tableName entry
+                 e.AuditEvent |> Insert |> inUserTable)
