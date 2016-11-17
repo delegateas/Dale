@@ -43,9 +43,8 @@ module Http =
 
   let fetchBatch oauthToken url =
     let json =
-      Http.RequestString(url, httpMethod = "GET")
-                         headers = [Accept "application/json"
-                                    Authorization ("Bearer " + oauthToken)])
+      Http.RequestString(url, httpMethod = "GET",
+                         headers = [Authorization ("Bearer " + oauthToken)])
     JsonValue.Parse json
 
   let mapToAuditWrites (json :JsonValue) :seq<AuditWrite> =

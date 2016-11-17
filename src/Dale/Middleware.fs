@@ -52,4 +52,4 @@ module Middleware =
     |> methodAllowed
 
   let interopHandler req =
-    wrappedAuditHandler req |> Async.StartAsTask
+    wrappedAuditHandler req
