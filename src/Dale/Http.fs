@@ -12,24 +12,12 @@ module Http =
   type Handler = HttpRequestMessage -> HttpResponseMessage
   exception ExportError of string
 
-  [<Literal>]
-  let NotifySchema = """[
-    {"tenantId": "{00000000-0000-0000-0000-000000000000}",
-      "clientId": "{00000000-0000-0000-0000-000000000000}",
-      "contentType": "Audit.SharePoint",
-      "contentId": "492638008028$492638008028$f28ab78ad40140608012736e37393...",
-      "contentUri": "https://manage.office.com/api/v1.0/...",
-      "contentCreated": "2015-05-23T17:35:00Z",
-      "contentExpiration": "2015-05-30T17:35:00Z"
-    }]"""
-
-  type Notifications = JsonProvider<NotifySchema>
-
-  let collectBatches (req :HttpRequestMessage) =
+  let collectBatches(req :HttpRequestMessage) =
     let body = req.Content.ReadAsStringAsync().Result
-    let json = Notifications.Parse body
-    json
-    |> Seq.map (fun i -> {Uri = i.ContentUri; Ttl = i.ContentExpiration})
+    let json = JsonValue.Parse body
+    json.AsArray()
+    |> Seq.map (fun i -> {Uri = i.GetProperty("contentUri").AsString();
+                          Ttl = i.GetProperty("contentExpiration").AsDateTime()})
 
   let fetchAuthToken =
     let tenant = Environment.GetEnvironmentVariable("Tenant")

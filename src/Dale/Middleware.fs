@@ -23,10 +23,10 @@ module Middleware =
   let isWellFormed (inner :Handler) :Handler =
     (fun req ->
       let body = req.Content.ReadAsStringAsync().Result
-      let json = Notifications.Parse body
+      let json = JsonValue.Parse body
       let valid =
-        json
-        |> Seq.map (fun i -> not (isNull i.ContentUri))
+        json.AsArray()
+        |> Seq.map (fun i -> not (isNull (i.GetProperty("contentUri").AsString())))
         |> Seq.reduce (&&)
       match valid with
         | true -> inner req
