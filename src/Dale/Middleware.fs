@@ -41,6 +41,3 @@ module Middleware =
     |> isWellFormed
     |> isValidation
     |> methodAllowed
-
-  let interopHandler req =
-    wrappedAuditHandler req
