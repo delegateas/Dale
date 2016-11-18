@@ -2,4 +2,3 @@ FSharp.Core
 FSharp.Data
 Microsoft.AspNet.WebApi.Client
 FSharp.Azure.Storage
-Microsoft.IdentityModel.Clients.ActiveDirectory

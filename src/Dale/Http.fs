@@ -7,7 +7,6 @@ module Http =
   open System.Net.Http
   open FSharp.Data
   open FSharp.Data.HttpRequestHeaders
-  open Microsoft.IdentityModel.Clients.ActiveDirectory
   open Dale.Storage
 
   type Handler = HttpRequestMessage -> HttpResponseMessage
@@ -32,14 +31,19 @@ module Http =
     |> Seq.map (fun i -> {Uri = i.ContentUri; Ttl = i.ContentExpiration})
 
   let fetchAuthToken =
-    let url = "https://login.windows.net/" +
-              Environment.GetEnvironmentVariable("Tenant")
-    let ctx = new AuthenticationContext(url);
-    let cid = Environment.GetEnvironmentVariable("ClientId")
-    let secret = Environment.GetEnvironmentVariable("ClientSecret")
-    let cred = new ClientCredential(cid, secret)
-    let res = ctx.AcquireTokenAsync("https://manage.office.com", cred).Result;
-    res.AccessToken
+    let tenant = Environment.GetEnvironmentVariable("Tenant")
+    let clientId = Environment.GetEnvironmentVariable("ClientId")
+    let clientSecret = Environment.GetEnvironmentVariable("ClientSecret")
+    let url = "https://login.microsoftonline.com/" + tenant + "/oauth2/token"
+    let json =
+      Http.RequestString(url, 
+                         headers=[Accept "application/json"],
+                         body=FormValues ["grant_type", "client_credentials";
+                                         "client_id", clientId;
+                                         "client_secret", clientSecret;
+                                         "resource", "https://manage.office.com"])
+    let res = JsonValue.Parse json
+    res.GetProperty("access_token").AsString()
 
   let fetchBatch oauthToken url =
     let json =
