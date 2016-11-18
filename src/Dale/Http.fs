@@ -10,6 +10,7 @@ module Http =
   open Dale.Storage
 
   type Handler = HttpRequestMessage -> HttpResponseMessage
+  exception ExportError of string
 
   [<Literal>]
   let NotifySchema = """[
@@ -82,3 +83,9 @@ module Http =
     |> fetchBatchWithToken
     |> mapToAuditWrites
     |> writeToAzure
+
+  let doExportWithException batch =
+    let res = doExport batch
+    match res with
+    | Some r -> ()
+    | None -> raise (ExportError("Unable to persist Audit Events"))
