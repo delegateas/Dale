@@ -6,12 +6,14 @@ open System
 open FSharp.Data
 open FSharp.Data.HttpRequestHeaders
 
+// Your values here ------------------------------------------------------------
 let tenant = "contoso.onmicrosoft.com"
 let tenantId = "my-tenant-id"
 let clientId = "my-client-id"
 let clientSecret = "my-client-secret"
 let webHookUrl = "https://my-webhook-app.com/api/webhook"
 let authId = "my-auth-id"
+// -----------------------------------------------------------------------------
 
 let fetchAuthToken =
   let url = "https://login.microsoftonline.com/" + tenant + "/oauth2/token"

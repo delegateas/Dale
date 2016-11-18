@@ -79,5 +79,5 @@ module Http =
   let doExportWithException batch =
     let res = doExport batch
     match res with
-    | Some r -> ()
+    | Some r -> r 
     | None -> raise (ExportError("Unable to persist Audit Events"))

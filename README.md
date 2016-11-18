@@ -34,10 +34,6 @@ After deploying DALE however you see fit, it is necessary to declare some enviro
 
 The last step is to configure your tenant's management API to send Audit events to DALE. You can do this via an HTTP POST to the management API.
 
-You can see the details of that request in the accompanying `subscribe.rest` file.
-Inside, you will find two HTTP requests. The first is for obtaining an oauth2 token, necessary for authenticating the second request, which actually creates a subscription to the WebHook.
+A script is provided to automate this task. Begin by opening `subscribe.fsx` script and replacing the variables at the top of the file with the values you collected in the previous steps.
 
-You can substitute the variable declarations at the top of the file with your own values and then execute the requests directly from inside Emacs if you use restclient.el. Otherwise, recreate the requests in your HTTP tool of choice.
-
-#### TODO
-* script for automating this bit.
+Then, you can execute the script via the `subscribe.cmd` or `subscribe.sh` wrappers.
