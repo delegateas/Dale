@@ -31,7 +31,11 @@ module Http =
                                     "client_id", clientId;
                                     "client_secret", clientSecret;
                                     "resource", "https://manage.office.com"])
-    let json = JsonValue.Parse (resp.Body.ToString())
+    let getRespText body =
+      match body with
+      | Text t -> t
+      | _ -> ""
+    let json = JsonValue.Parse (getRespText resp.Body)
     match resp.StatusCode with
     | 200 -> Some (json.GetProperty("access_token").AsString())
     | _ -> None
