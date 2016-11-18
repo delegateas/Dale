@@ -12,16 +12,12 @@ module Middleware =
     (fun req ->
       match req.Method.ToString() with
         | "POST" -> inner req
-        | _ -> async {
-                 return new HttpResponseMessage(HttpStatusCode.MethodNotAllowed)
-               })
+        | _ -> new HttpResponseMessage(HttpStatusCode.MethodNotAllowed))
 
   let isValidation (inner :Handler) :Handler =
     (fun req ->
       match req.Headers.Contains "Webhook-ValidationCode" with
-        | true -> async {
-            return new HttpResponseMessage(HttpStatusCode.OK)
-          }
+        | true -> new HttpResponseMessage(HttpStatusCode.OK)
         | false -> inner req)
 
   let isWellFormed (inner :Handler) :Handler =
@@ -34,16 +30,11 @@ module Middleware =
         |> Seq.reduce (&&)
       match valid with
         | true -> inner req
-        | false -> async {
-                     return new HttpResponseMessage(HttpStatusCode.BadRequest)
-                   })
+        | false -> new HttpResponseMessage(HttpStatusCode.BadRequest))
 
-  let auditHandler (req :HttpRequestMessage) :Async<HttpResponseMessage> =
-    async {
-      let batches = collectBatches req
-      doExport batches |> Async.Start
-      return new HttpResponseMessage(HttpStatusCode.OK)
-    }
+  let auditHandler (req :HttpRequestMessage) :HttpResponseMessage =
+    queueBatches req |> ignore
+    new HttpResponseMessage(HttpStatusCode.OK)
 
   let wrappedAuditHandler :Handler =
     auditHandler

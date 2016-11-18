@@ -5,6 +5,7 @@ module Storage =
   open FSharp.Azure.Storage.Table
   open Microsoft.WindowsAzure.Storage
   open Microsoft.WindowsAzure.Storage.Table
+  open Microsoft.WindowsAzure.Storage.Queue
 
   type UserId = string
 
@@ -17,6 +18,26 @@ module Storage =
   type AuditWrite =
     { UserId :UserId
       AuditEvent :AuditEvent }
+  
+  type QueuedContent =
+    { Uri :string
+      Ttl :DateTime }
+
+  let fetchAuditQueue =
+    let conn = Environment.GetEnvironmentVariable("AzureConnectionString")
+    let account = CloudStorageAccount.Parse conn
+    let queueClient = account.CreateCloudQueueClient()
+    queueClient.GetQueueReference("dale-auditeventqueue") 
+  
+  let queueContentToAzure (uris :seq<QueuedContent>) =
+    let queue = fetchAuditQueue 
+    queue.CreateIfNotExists() |> ignore
+    uris
+    |> Seq.map (fun u ->
+                  let t = new TimeSpan(u.Ttl.Ticks - DateTime.UtcNow.Ticks)
+                  let n = new Nullable<TimeSpan>(t)
+                  let msg = new CloudQueueMessage(u.Uri)
+                  queue.AddMessage(msg, n))
 
   let userTableName (userId :string) :string =
     let cand =

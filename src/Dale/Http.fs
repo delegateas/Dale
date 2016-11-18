@@ -10,7 +10,7 @@ module Http =
   open Microsoft.IdentityModel.Clients.ActiveDirectory
   open Dale.Storage
 
-  type Handler = HttpRequestMessage -> Async<HttpResponseMessage>
+  type Handler = HttpRequestMessage -> HttpResponseMessage
 
   [<Literal>]
   let NotifySchema = """[
@@ -29,7 +29,7 @@ module Http =
     let body = req.Content.ReadAsStringAsync().Result
     let json = Notifications.Parse body
     json
-    |> Seq.map (fun i -> i.ContentUri)
+    |> Seq.map (fun i -> {Uri = i.ContentUri; Ttl = i.ContentExpiration})
 
   let fetchAuthToken =
     let url = "https://login.windows.net/" +
@@ -58,15 +58,17 @@ module Http =
                      Time = e.GetProperty("CreationTime").ToString();
                      Json = e.ToString() }})
 
-  let doExport (batches :seq<string>) =
-    async {
-      let token = fetchAuthToken
-      let fetchBatchWithToken = fun (batch :string) -> fetchBatch token batch
-      let results =
-        batches
-        |> Seq.map fetchBatchWithToken
-        |> Seq.map mapToAuditWrites
-        |> Seq.map writeToAzure
-      printfn "%A" results
-    }
+  let queueBatches (req :HttpRequestMessage) =
+    let batches = collectBatches req
+    queueContentToAzure batches
+
+  let doExport (batch :string) =
+    let token = fetchAuthToken
+    let fetchBatchWithToken = fun (batch :string) -> fetchBatch token batch
+    let results =
+      batch
+      |> fetchBatchWithToken
+      |> mapToAuditWrites
+      |> writeToAzure
+    printfn "%A" results
 

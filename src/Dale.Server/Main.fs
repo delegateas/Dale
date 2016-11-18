@@ -10,14 +10,14 @@ open Dale.Middleware
 // This adapter pinched from github.com/frank-fs/frank
 type AsyncAdapter =
   inherit DelegatingHandler
-  val AsyncSend : Handler
+  val AsyncSend : HttpRequestMessage -> Async<HttpResponseMessage>
   new (f, inner) = { inherit DelegatingHandler(inner); AsyncSend = f }
   new (f) = { inherit DelegatingHandler(); AsyncSend = f }
   override x.SendAsync(request, cancellationToken) =
     Async.StartAsTask(x.AsyncSend request, cancellationToken = cancellationToken)
 
 
-let listener (handler :Handler) =
+let listener (handler :HttpRequestMessage -> Async<HttpResponseMessage>) =
   let adapter = new AsyncAdapter(handler)
   let route = new Routing.HttpRoute("notify", null, null, null, adapter)
   let host = "http://localhost:" + Environment.GetEnvironmentVariable("Port")
@@ -46,7 +46,11 @@ let main argv =
   ensureEnvVar "AzureConnectionString"
   ensureEnvVar "Port"
 
-  let server = listener wrappedAuditHandler
+  let asyncHandler = (fun req -> async {
+         return wrappedAuditHandler req
+  })
+
+  let server = listener asyncHandler
   server.OpenAsync().Wait()
   System.Console.ReadKey() |> ignore
   0
