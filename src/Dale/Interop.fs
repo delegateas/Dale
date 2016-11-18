@@ -7,7 +7,7 @@ module Interop =
   let doExportWithException batch =
     let res = doExport batch
     match res with
-    | Some r -> (r |> Seq.map(sprintf "%A") |> Seq.toList)
+    | Some r -> (r |> Array.map(sprintf "%A")) 
     | None -> raise (ExportError("Unable to persist Audit Events."))
 
   let handler req =

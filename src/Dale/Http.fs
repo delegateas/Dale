@@ -16,8 +16,9 @@ module Http =
     let body = req.Content.ReadAsStringAsync().Result
     let json = JsonValue.Parse body
     json.AsArray()
-    |> Seq.map (fun i -> {Uri = i.GetProperty("contentUri").AsString();
-                          Ttl = i.GetProperty("contentExpiration").AsDateTime()})
+    |> Array.map (fun i ->
+                   {Uri = i.GetProperty("contentUri").AsString();
+                    Ttl = i.GetProperty("contentExpiration").AsDateTime()})
 
   let fetchAuthToken =
     let tenant = Environment.GetEnvironmentVariable("Tenant")
@@ -35,6 +36,7 @@ module Http =
       match body with
       | Text t -> t
       | _ -> ""
+
     let json = JsonValue.Parse (getRespText resp.Body)
     match resp.StatusCode with
     | 200 -> Some (json.GetProperty("access_token").AsString())
@@ -47,18 +49,23 @@ module Http =
     JsonValue.Parse json
 
   let mapToAuditWrites (json) =
+
+    let toAuditWrite (e :JsonValue) =
+      let dt = e.GetProperty("CreationTime").AsString().Split [|'T'|]
+      { UserId = e.GetProperty("UserId").ToString();
+        AuditEvent =
+         { ServiceType = e.GetProperty("Workload").AsString();
+           Id   = e.GetProperty("Id").AsString();
+           Date = Seq.head dt;
+           Time = Seq.last dt;
+           ObjectId = e.GetProperty("ObjectId").AsString();
+           Operation = e.GetProperty("Operation").AsString();
+           Result = e.GetProperty("ResultStatus").AsString();
+           Json = e.ToString() }}
+
     match json with
     | None -> None
-    | Some (j :JsonValue) ->
-        Some (j.AsArray()
-        |> Seq.map (fun e ->
-                     let k = e.GetProperty("CreationTime").AsDateTime().ToShortDateString()
-                     {UserId = e.GetProperty("UserId").ToString();
-                      AuditEvent =
-                        {ServiceType = e.GetProperty("Workload").ToString();
-                         Id   = e.GetProperty("Id").ToString();
-                         Time = e.GetProperty("CreationTime").ToString();
-                         Json = e.ToString() }}))
+    | Some (j :JsonValue) -> Some (j.AsArray() |> Array.map toAuditWrite)
 
   let queueBatches (req :HttpRequestMessage) =
     let batches = collectBatches req
@@ -66,6 +73,7 @@ module Http =
 
   let doExport (batch :string) =
     let token = fetchAuthToken
+
     let fetchBatchWithToken = fun (batch :string) ->
       match token with
       | Some t -> Some (fetchBatch t batch)
@@ -75,9 +83,3 @@ module Http =
     |> fetchBatchWithToken
     |> mapToAuditWrites
     |> writeToAzure
-
-  let doExportWithException batch =
-    let res = doExport batch
-    match res with
-    | Some r -> (r |> Seq.map(sprintf "%A"))
-    | None -> raise (ExportError("Unable to persist Audit Events."))

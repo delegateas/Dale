@@ -10,9 +10,13 @@ module Storage =
   type UserId = string
 
   type AuditEvent =
-    { [<PartitionKey>] Time :string
+    { [<PartitionKey>] Date :string
       [<RowKey>] Id :string
       ServiceType :string
+      Operation :string
+      Time :string
+      Result :string
+      ObjectId :string
       Json :string }
 
   type AuditWrite =
@@ -51,17 +55,19 @@ module Storage =
     "Audit" + cand
 
   let writeToAzure (events) =
-    let write (ev :seq<AuditWrite>) = 
+
+    let write (ev :AuditWrite[]) = 
       let conn = Environment.GetEnvironmentVariable("AzureConnectionString")
       let account = CloudStorageAccount.Parse conn
       let tableClient = account.CreateCloudTableClient()
       ev
-      |> Seq.map (fun e ->
-                   let tableName = userTableName e.UserId
-                   let table = tableClient.GetTableReference(tableName)
-                   table.CreateIfNotExists() |> ignore
-                   let inUserTable entry = inTable tableClient tableName entry
-                   e.AuditEvent |> Insert |> inUserTable)
+      |> Array.map (fun e ->
+                     let tableName = userTableName e.UserId
+                     let table = tableClient.GetTableReference(tableName)
+                     table.CreateIfNotExists() |> ignore
+                     let inUserTable entry = inTable tableClient tableName entry
+                     e.AuditEvent |> Insert |> inUserTable)
+
     match events with
-    | Some (ev :seq<AuditWrite>) -> Some (write ev) 
+    | Some (ev :AuditWrite[]) -> Some (write ev) 
     | None -> None

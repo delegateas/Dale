@@ -231,6 +231,7 @@
     <Compile Include="Storage.fs" />
     <Compile Include="Http.fs" />
     <Compile Include="Middleware.fs" />
+    <Compile Include="Interop.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />

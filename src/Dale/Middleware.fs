@@ -26,8 +26,9 @@ module Middleware =
       let json = JsonValue.Parse body
       let valid =
         json.AsArray()
-        |> Seq.map (fun i -> not (isNull (i.GetProperty("contentUri").AsString())))
-        |> Seq.reduce (&&)
+        |> Array.map (fun i ->
+                        not (isNull (i.GetProperty("contentUri").AsString())))
+        |> Array.reduce (&&)
       match valid with
         | true -> inner req
         | false -> new HttpResponseMessage(HttpStatusCode.BadRequest))
