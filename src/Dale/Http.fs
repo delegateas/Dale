@@ -35,15 +35,17 @@ module Http =
     let clientId = Environment.GetEnvironmentVariable("ClientId")
     let clientSecret = Environment.GetEnvironmentVariable("ClientSecret")
     let url = "https://login.microsoftonline.com/" + tenant + "/oauth2/token"
-    let json =
-      Http.RequestString(url, 
-                         headers=[Accept "application/json"],
-                         body=FormValues ["grant_type", "client_credentials";
-                                         "client_id", clientId;
-                                         "client_secret", clientSecret;
-                                         "resource", "https://manage.office.com"])
-    let res = JsonValue.Parse json
-    res.GetProperty("access_token").AsString()
+    let resp =
+      Http.Request(url, 
+                   headers=[Accept "application/json"],
+                   body=FormValues ["grant_type", "client_credentials";
+                                    "client_id", clientId;
+                                    "client_secret", clientSecret;
+                                    "resource", "https://manage.office.com"])
+    let json = JsonValue.Parse (resp.Body.ToString())
+    match resp.StatusCode with
+    | 200 -> Some (json.GetProperty("access_token").AsString())
+    | _ -> None
 
   let fetchBatch oauthToken url =
     let json =
@@ -51,16 +53,19 @@ module Http =
                          headers = [Authorization ("Bearer " + oauthToken)])
     JsonValue.Parse json
 
-  let mapToAuditWrites (json :JsonValue) :seq<AuditWrite> =
-    json.AsArray()
-    |> Seq.map (fun e ->
-                 let k = e.GetProperty("CreationTime").AsDateTime().ToShortDateString()
-                 {UserId = e.GetProperty("UserId").ToString();
-                  AuditEvent =
-                    {ServiceType = e.GetProperty("Workload").ToString();
-                     Id   = e.GetProperty("Id").ToString();
-                     Time = e.GetProperty("CreationTime").ToString();
-                     Json = e.ToString() }})
+  let mapToAuditWrites (json) =
+    match json with
+    | None -> None
+    | Some (j :JsonValue) ->
+        Some (j.AsArray()
+        |> Seq.map (fun e ->
+                     let k = e.GetProperty("CreationTime").AsDateTime().ToShortDateString()
+                     {UserId = e.GetProperty("UserId").ToString();
+                      AuditEvent =
+                        {ServiceType = e.GetProperty("Workload").ToString();
+                         Id   = e.GetProperty("Id").ToString();
+                         Time = e.GetProperty("CreationTime").ToString();
+                         Json = e.ToString() }}))
 
   let queueBatches (req :HttpRequestMessage) =
     let batches = collectBatches req
@@ -68,10 +73,12 @@ module Http =
 
   let doExport (batch :string) =
     let token = fetchAuthToken
-    let fetchBatchWithToken = fun (batch :string) -> fetchBatch token batch
-    let results =
-      batch
-      |> fetchBatchWithToken
-      |> mapToAuditWrites
-      |> writeToAzure
-    printfn "%A" results
+    let fetchBatchWithToken = fun (batch :string) ->
+      match token with
+      | Some t -> Some (fetchBatch t batch)
+      | None -> None 
+
+    batch
+    |> fetchBatchWithToken
+    |> mapToAuditWrites
+    |> writeToAzure

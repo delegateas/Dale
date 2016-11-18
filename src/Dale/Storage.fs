@@ -50,14 +50,18 @@ module Storage =
       |> String.Concat
     "Audit" + cand
 
-  let writeToAzure (events :seq<AuditWrite>) =
-    let conn = Environment.GetEnvironmentVariable("AzureConnectionString")
-    let account = CloudStorageAccount.Parse conn
-    let tableClient = account.CreateCloudTableClient()
-    events
-    |> Seq.map (fun e ->
-                 let tableName = userTableName e.UserId
-                 let table = tableClient.GetTableReference(tableName)
-                 table.CreateIfNotExists() |> ignore
-                 let inUserTable entry = inTable tableClient tableName entry
-                 e.AuditEvent |> Insert |> inUserTable)
+  let writeToAzure (events) =
+    let write (ev :seq<AuditWrite>) = 
+      let conn = Environment.GetEnvironmentVariable("AzureConnectionString")
+      let account = CloudStorageAccount.Parse conn
+      let tableClient = account.CreateCloudTableClient()
+      ev
+      |> Seq.map (fun e ->
+                   let tableName = userTableName e.UserId
+                   let table = tableClient.GetTableReference(tableName)
+                   table.CreateIfNotExists() |> ignore
+                   let inUserTable entry = inTable tableClient tableName entry
+                   e.AuditEvent |> Insert |> inUserTable)
+    match events with
+    | Some (ev :seq<AuditWrite>) -> Some (write ev) 
+    | None -> None
