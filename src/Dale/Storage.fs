@@ -18,7 +18,7 @@ module Storage =
   type AuditWrite =
     { UserId :UserId
       AuditEvent :AuditEvent }
-  
+
   type QueuedContent =
     { Uri :string
       Ttl :DateTime }
@@ -27,15 +27,18 @@ module Storage =
     let conn = Environment.GetEnvironmentVariable("AzureConnectionString")
     let account = CloudStorageAccount.Parse conn
     let queueClient = account.CreateCloudQueueClient()
-    queueClient.GetQueueReference("dale-auditeventqueue") 
-  
+    queueClient.GetQueueReference("dale-auditeventqueue")
+
   let queueContentToAzure (uris :seq<QueuedContent>) =
-    let queue = fetchAuditQueue 
-    queue.CreateIfNotExists() |> ignore
+    let queue = fetchAuditQueue
+    let _ = queue.CreateIfNotExists()
+    // Azure Cloud Queue TTL cannot exceed 7 days
+    let max = new TimeSpan(7, 0, 0, 0)
     uris
-    |> Seq.map (fun u ->
-                  let t = new TimeSpan(u.Ttl.Ticks - DateTime.UtcNow.Ticks)
-                  let n = new Nullable<TimeSpan>(t)
+    |> Seq.iter (fun u ->
+                  let t = u.Ttl.Ticks - DateTime.UtcNow.Ticks
+                  let ttl = Math.Min(t, max.Ticks)
+                  let n = new Nullable<TimeSpan>(new TimeSpan(ttl))
                   let msg = new CloudQueueMessage(u.Uri)
                   queue.AddMessage(msg, n))
 

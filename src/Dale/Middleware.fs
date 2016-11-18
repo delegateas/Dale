@@ -33,7 +33,7 @@ module Middleware =
         | false -> new HttpResponseMessage(HttpStatusCode.BadRequest))
 
   let auditHandler (req :HttpRequestMessage) :HttpResponseMessage =
-    queueBatches req |> ignore
+    let res = queueBatches req
     new HttpResponseMessage(HttpStatusCode.OK)
 
   let wrappedAuditHandler :Handler =

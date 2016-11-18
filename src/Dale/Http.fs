@@ -71,4 +71,3 @@ module Http =
       |> mapToAuditWrites
       |> writeToAzure
     printfn "%A" results
-
