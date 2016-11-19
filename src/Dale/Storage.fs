@@ -33,18 +33,19 @@ module Storage =
     let queueClient = account.CreateCloudQueueClient()
     queueClient.GetQueueReference("dale-auditeventqueue")
 
-  let queueContentToAzure (uris :seq<QueuedContent>) =
+  let queueContentToAzure (uris) =
     let queue = fetchAuditQueue
     let _ = queue.CreateIfNotExists()
     // Azure Cloud Queue TTL cannot exceed 7 days
     let max = new TimeSpan(7, 0, 0, 0)
     uris
-    |> Seq.iter (fun u ->
-                  let t = u.Ttl.Ticks - DateTime.UtcNow.Ticks
-                  let ttl = Math.Min(t, max.Ticks)
-                  let n = new Nullable<TimeSpan>(new TimeSpan(ttl))
-                  let msg = new CloudQueueMessage(u.Uri)
-                  queue.AddMessage(msg, n))
+    |> Array.filter (fun e -> e.Ttl > DateTime.UtcNow)
+    |> Array.iter (fun u ->
+                    let t = Math.Max(0L, u.Ttl.Ticks - DateTime.UtcNow.Ticks)
+                    let ttl = Math.Min(t, max.Ticks)
+                    let n = new Nullable<TimeSpan>(new TimeSpan(ttl))
+                    let msg = new CloudQueueMessage(u.Uri)
+                    queue.AddMessage(msg, n))
 
   let userTableName (userId :string) :string =
     let cand =

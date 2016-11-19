@@ -20,6 +20,11 @@ module Http =
                    {Uri = i.GetProperty("contentUri").AsString();
                     Ttl = i.GetProperty("contentExpiration").AsDateTime()})
 
+  let getRespText body =
+      match body with
+      | Text t -> t
+      | _ -> ""
+
   let fetchAuthToken =
     let tenant = Environment.GetEnvironmentVariable("Tenant")
     let clientId = Environment.GetEnvironmentVariable("ClientId")
@@ -32,21 +37,20 @@ module Http =
                                     "client_id", clientId;
                                     "client_secret", clientSecret;
                                     "resource", "https://manage.office.com"])
-    let getRespText body =
-      match body with
-      | Text t -> t
-      | _ -> ""
-
+    
     let json = JsonValue.Parse (getRespText resp.Body)
     match resp.StatusCode with
     | 200 -> Some (json.GetProperty("access_token").AsString())
     | _ -> None
 
   let fetchBatch oauthToken url =
-    let json =
-      Http.RequestString(url, httpMethod = "GET",
-                         headers = [Authorization ("Bearer " + oauthToken)])
-    JsonValue.Parse json
+    let resp =
+      Http.Request(url, httpMethod = "GET",
+                   headers = [Authorization ("Bearer " + oauthToken);
+                              Accept "application/json"])
+    match resp.StatusCode with
+    | 200 -> Some (JsonValue.Parse (getRespText resp.Body))
+    | _ -> None
 
   let mapToAuditWrites (json) =
 
@@ -76,7 +80,7 @@ module Http =
 
     let fetchBatchWithToken = fun (batch :string) ->
       match token with
-      | Some t -> Some (fetchBatch t batch)
+      | Some t -> (fetchBatch t batch)
       | None -> None 
 
     batch
