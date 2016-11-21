@@ -3,17 +3,30 @@
 ## Installation
 
 ### Registration in Active Directory
-First, register an App in the target tenant's Azure Active Directory.
 
-You can follow a guide on how to do this via the Azure Portal [here](https://msdn.microsoft.com/en-us/office-365/get-started-with-office-365-management-apis). Make sure you do this from the Classic Portal, in order to get a Service Principal provisioned.
+1. Sign in to the Azure management portal. ([management.microsoftazure.com](https://management.microsoftazure.com))
+2. Click on Active Directory in the left hand nav.
+3. Click the directory tenant whose audit data you want to export.
+4. Click the Applications tab.
+5. In the bottom drawer, click Add.
+6. Click "Add an application my organization is developing".
+7. Enter a friendly name for the application, "Audit Log Exporter", for example, then select "Web Application and/or Web API", and click next.
+8. For the sign-on URL, enter the URL to where the DALE instance will be hosted. You can change the value at a later time.
+9. For the App ID URI, enter https://<your_tenant_name>/dale, replacing <your_tenant_name> with the name of your Azure AD tenant.
 
-Take note of your App's ClientId.
+Your application is now registered. However, before moving on to the next step, you need to grant DALE access to the Management API on your tenant.
 
-You will also need to generate a key for the App (The ClientSecret), also depicted in the guide linked above. Make sure to copy the ClientSecret, because you will need it later and you cannot see it via the portal again after leaving the page.
+a. While still in the Azure portal, click the Configure tab of your application.
+b. Find the Client ID value and copy it to the clipboard. You will need it later.
+c. Scroll to the bottom of the Configure tab, and click add application
+d. Select the Office 365 Management APIs.
+e. Under Application Permissions, grant the `Read activity data for your organization` permisison.
+![Granting permissions to Audit Log](doc/img/install-permissions.png)
 
-The next step is to assign the necessary permissions to the App. This is also elaborated upon in the guide, under the heading, __Specify the permissions your app requires to access the Office 365 Management APIs__.
-
-Finally, before leaving the portal, you should take note of the Tenant-Id for your Office 365 tenant, as you will need this for registering the WebHook later.
+f. Scroll up to the heading "Keys", and add a new key with a duration of your choosing.
+g. Hit the `Save` button in the bottom drawer.
+h. You will now see the key value displayed. Copy the text somewhere safe -- you will need it at a later stage and it cannot be retrieved once you've left this screen.
+i. Finally, before leaving the Portal, you will need to take note of your Tenant ID:
 
 The tenant ID can be obtained from the URL when you are browsing the Active Directory blades in the Classic Portal. The URL will appear as below:
 
