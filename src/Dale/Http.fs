@@ -64,7 +64,6 @@ module Http =
            Time = Seq.last dt;
            ObjectId = e.GetProperty("ObjectId").AsString();
            Operation = e.GetProperty("Operation").AsString();
-           Result = e.GetProperty("ResultStatus").AsString();
            Json = e.ToString() }}
 
     match json with

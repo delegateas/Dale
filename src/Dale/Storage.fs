@@ -15,7 +15,6 @@ module Storage =
       ServiceType :string
       Operation :string
       Time :string
-      Result :string
       ObjectId :string
       Json :string }
 
