@@ -54,16 +54,22 @@ module Http =
 
   let mapToAuditWrites (json) =
 
+    let prop2string (j :Option<JsonValue>) =
+      match j with
+      | Some v -> v.AsString()
+      | None -> ""
+
     let toAuditWrite (e :JsonValue) =
       let dt = e.GetProperty("CreationTime").AsString().Split [|'T'|]
       { UserId = e.GetProperty("UserId").ToString();
         AuditEvent =
-         { ServiceType = e.GetProperty("Workload").AsString();
-           Id   = e.GetProperty("Id").AsString();
+         { ServiceType = prop2string (e.TryGetProperty("Workload"));
+           Id = prop2string (e.TryGetProperty("Id"));
            Date = Seq.head dt;
            Time = Seq.last dt;
-           ObjectId = e.GetProperty("ObjectId").AsString();
-           Operation = e.GetProperty("Operation").AsString();
+           ObjectId = prop2string (e.TryGetProperty("ObjectId"));
+           Operation = prop2string (e.TryGetProperty("Operation"));
+           Status = prop2string (e.TryGetProperty("ResultStatus"));
            Json = e.ToString() }}
 
     match json with

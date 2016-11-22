@@ -14,6 +14,7 @@ module Storage =
       [<RowKey>] Id :string
       ServiceType :string
       Operation :string
+      Status :string
       Time :string
       ObjectId :string
       Json :string }
