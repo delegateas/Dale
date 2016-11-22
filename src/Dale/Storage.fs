@@ -6,8 +6,15 @@ module Storage =
   open Microsoft.WindowsAzure.Storage
   open Microsoft.WindowsAzure.Storage.Table
   open Microsoft.WindowsAzure.Storage.Queue
+  open FSharp.Data
 
   type UserId = string
+
+  type ContentUri = string
+
+  type Content =
+    { ContentUri :ContentUri
+      Json :JsonValue }
 
   type AuditEvent =
     { [<PartitionKey>] Date :string
@@ -27,9 +34,12 @@ module Storage =
     { Uri :string
       Ttl :DateTime }
 
-  let fetchAuditQueue =
+  let fetchAccount =
     let conn = Environment.GetEnvironmentVariable("AzureConnectionString")
-    let account = CloudStorageAccount.Parse conn
+    CloudStorageAccount.Parse conn
+
+  let fetchAuditQueue =
+    let account = fetchAccount
     let queueClient = account.CreateCloudQueueClient()
     queueClient.GetQueueReference("dale-auditeventqueue")
 
@@ -71,4 +81,29 @@ module Storage =
 
     match events with
     | Some (ev :AuditWrite[]) -> Some (write ev) 
+    | None -> None
+
+  let dumpBlob (content :Option<Content>) =
+
+    let AzureIO (f :Blob.CloudBlockBlob, s) =
+      try
+        Some (f.UploadText(s))
+      with
+      | ex -> printfn "Exception! %s " (ex.Message); None 
+
+    let dump (c :Content) =
+      let j = c.Json
+      let account = fetchAccount
+      let blobClient = account.CreateCloudBlobClient()
+      let container = blobClient.GetContainerReference("audit-blob-dump")
+      container.CreateIfNotExists() |> ignore
+      let uri = new Uri(c.ContentUri);
+      let name = uri.Host + uri.PathAndQuery;
+      let file = container.GetBlockBlobReference(name);
+      match AzureIO(file, j.ToString()) with
+      | Some _ -> Some j
+      | None -> None
+
+    match content with
+    | Some (c :Content) -> dump c
     | None -> None

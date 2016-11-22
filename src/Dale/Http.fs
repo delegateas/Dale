@@ -49,7 +49,8 @@ module Http =
                    headers = [Authorization ("Bearer " + oauthToken);
                               Accept "application/json"])
     match resp.StatusCode with
-    | 200 -> Some (JsonValue.Parse (getRespText resp.Body))
+    | 200 -> Some ({Json=JsonValue.Parse (getRespText resp.Body);
+                    ContentUri=url})
     | _ -> None
 
   let mapToAuditWrites (json) =
@@ -90,5 +91,6 @@ module Http =
 
     batch
     |> fetchBatchWithToken
+    |> dumpBlob
     |> mapToAuditWrites
     |> writeToAzure
