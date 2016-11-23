@@ -12,7 +12,7 @@
 6. Click "Add an application my organization is developing".
 7. Enter a friendly name for the application, "Audit Log Exporter", for example, then select "Web Application and/or Web API", and click next.
 8. For the sign-on URL, enter the URL to where the DALE instance will be hosted. You can change the value at a later time.
-9. For the App ID URI, enter https://<your_tenant_name>/dale, replacing <your_tenant_name> with the name of your Azure AD tenant.
+9. For the App ID URI, enter https://`<your_tenant_name>`/dale, replacing `<your_tenant_name>` with the name of your Azure AD tenant.
 
 Your application is now registered. However, before moving on to the next step, you need to grant DALE access to the Management API on your tenant.
 
