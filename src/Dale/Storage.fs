@@ -34,18 +34,15 @@ module Storage =
     { Uri :string
       Ttl :DateTime }
 
-  let fetchAccount =
-    let conn = Environment.GetEnvironmentVariable("AzureConnectionString")
-    CloudStorageAccount.Parse conn
+  let fetchAccount connString =
+    CloudStorageAccount.Parse connString
 
-  let fetchAuditQueue =
-    let account = fetchAccount
+
+  let fetchAuditQueue (account :CloudStorageAccount) queueName =
     let queueClient = account.CreateCloudQueueClient()
-    queueClient.GetQueueReference("dale-auditeventqueue")
+    queueClient.GetQueueReference(queueName)
 
-  let queueContentToAzure (uris) =
-    let queue = fetchAuditQueue
-    let _ = queue.CreateIfNotExists()
+  let queueContentToAzure (queue :CloudQueue) uris =
     // Azure Cloud Queue TTL cannot exceed 7 days
     let max = new TimeSpan(7, 0, 0, 0)
     uris
@@ -65,11 +62,9 @@ module Storage =
       |> String.Concat
     "Audit" + cand
 
-  let writeToAzure (events) =
+  let writeToAzureTable account events =
 
-    let write (ev :AuditWrite[]) = 
-      let conn = Environment.GetEnvironmentVariable("AzureConnectionString")
-      let account = CloudStorageAccount.Parse conn
+    let write (account :CloudStorageAccount) (ev :AuditWrite[]) = 
       let tableClient = account.CreateCloudTableClient()
       ev
       |> Array.map (fun e ->
@@ -80,12 +75,12 @@ module Storage =
                      e.AuditEvent |> Insert |> inUserTable)
 
     match events with
-    | Some (ev :AuditWrite[]) -> Some (write ev) 
+    | Some (ev :AuditWrite[]) -> Some (write account  ev) 
     | None -> None
 
-  let dumpBlob (content :Option<Content>) =
+  let dumpBlob (account :CloudStorageAccount) (content :Option<Content>) =
 
-    let AzureIO (f :Blob.CloudBlockBlob, s) =
+    let azureIO (f :Blob.CloudBlockBlob, s) =
       try
         Some (f.UploadText(s))
       with
@@ -93,14 +88,13 @@ module Storage =
 
     let dump (c :Content) =
       let j = c.Json
-      let account = fetchAccount
       let blobClient = account.CreateCloudBlobClient()
       let container = blobClient.GetContainerReference("audit-blob-dump")
       container.CreateIfNotExists() |> ignore
       let uri = new Uri(c.ContentUri);
       let name = uri.Host + uri.PathAndQuery;
       let file = container.GetBlockBlobReference(name);
-      match AzureIO(file, j.ToString()) with
+      match azureIO(file, j.ToString()) with
       | Some _ -> Some j
       | None -> None
 

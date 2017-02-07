@@ -4,8 +4,8 @@ open System
 open System.Net.Http
 open System.Web.Http
 open System.Web.Http.SelfHost
-open Dale.Http
 open Dale.Middleware
+open Dale
 
 // This adapter pinched from github.com/frank-fs/frank
 type AsyncAdapter =
@@ -45,12 +45,16 @@ let main argv =
   ensureEnvVar "ClientSecret"
   ensureEnvVar "AzureConnectionString"
   ensureEnvVar "Port"
+  let conf =
+    { Tenant = Environment.GetEnvironmentVariable("Tenant");
+      ClientId = Environment.GetEnvironmentVariable("ClientId");
+      ClientSecret = Environment.GetEnvironmentVariable("ClientSecret");
+      AzureConnectionString = Environment.GetEnvironmentVariable("AzureConnectionString");
+      AzureQueueName = "dale-auditeventqueue";
+      RedactedFields = Set.ofArray [||]; }
 
-  let asyncHandler = (fun req -> async {
-         return wrappedAuditHandler req
-  })
-
-  let server = listener asyncHandler
+  let exporter = new Dale.Exporter(conf)
+  let server = listener exporter.AsyncHandler
   server.OpenAsync().Wait()
   System.Console.ReadKey() |> ignore
   0

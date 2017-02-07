@@ -228,15 +228,19 @@
     </When>
   </Choose>
   <ItemGroup>
+    <Compile Include="Configuration.fs" />
+    <Compile Include="JsonRedactor.fs" />
     <Compile Include="Storage.fs" />
     <Compile Include="Http.fs" />
     <Compile Include="Middleware.fs" />
-    <Compile Include="Interop.fs" />
+    <Compile Include="Root.fs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="FSharp.Data.TypeProviders" />
     <Reference Include="mscorlib" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.Linq" />
     <Reference Include="System.Numerics" />
   </ItemGroup>
 </Project>

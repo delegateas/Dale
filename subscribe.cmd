@@ -12,3 +12,4 @@ if errorlevel 1 (
 )
 
 packages\FAKE\tools\FAKE.exe subscribe.fsx %*
+set /p=

@@ -33,12 +33,4 @@ module Middleware =
         | true -> inner req
         | false -> new HttpResponseMessage(HttpStatusCode.BadRequest))
 
-  let auditHandler (req :HttpRequestMessage) :HttpResponseMessage =
-    let res = queueBatches req
-    new HttpResponseMessage(HttpStatusCode.OK)
 
-  let wrappedAuditHandler :Handler =
-    auditHandler
-    |> isWellFormed
-    |> isValidation
-    |> methodAllowed

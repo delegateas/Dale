@@ -7,12 +7,12 @@ open FSharp.Data
 open FSharp.Data.HttpRequestHeaders
 
 // Your values here ------------------------------------------------------------
-let tenant = "contoso.onmicrosoft.com"
-let tenantId = "my-tenant-id"
-let clientId = "my-client-id"
-let clientSecret = "my-client-secret"
-let webHookUrl = "https://my-webhook-app.com/api/webhook"
-let authId = "my-auth-id"
+let tenant = ""
+let tenantId = ""
+let clientId = ""
+let clientSecret = ""
+let webHookUrl = ""
+let authId = clientId
 // -----------------------------------------------------------------------------
 
 let fetchAuthToken =

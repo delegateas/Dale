@@ -2,8 +2,6 @@ namespace Dale
 
 module Http =
   open System
-  open System.IO
-  open System.Net
   open System.Net.Http
   open FSharp.Data
   open FSharp.Data.HttpRequestHeaders
@@ -25,10 +23,7 @@ module Http =
       | Text t -> t
       | _ -> ""
 
-  let fetchAuthToken =
-    let tenant = Environment.GetEnvironmentVariable("Tenant")
-    let clientId = Environment.GetEnvironmentVariable("ClientId")
-    let clientSecret = Environment.GetEnvironmentVariable("ClientSecret")
+  let fetchAuthToken tenant clientId clientSecret =
     let url = "https://login.microsoftonline.com/" + tenant + "/oauth2/token"
     let resp =
       Http.Request(url, 
@@ -76,21 +71,3 @@ module Http =
     match json with
     | None -> None
     | Some (j :JsonValue) -> Some (j.AsArray() |> Array.map toAuditWrite)
-
-  let queueBatches (req :HttpRequestMessage) =
-    let batches = collectBatches req
-    queueContentToAzure batches
-
-  let doExport (batch :string) =
-    let token = fetchAuthToken
-
-    let fetchBatchWithToken = fun (batch :string) ->
-      match token with
-      | Some t -> (fetchBatch t batch)
-      | None -> None 
-
-    batch
-    |> fetchBatchWithToken
-    |> dumpBlob
-    |> mapToAuditWrites
-    |> writeToAzure

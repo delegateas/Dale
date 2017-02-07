@@ -16,7 +16,7 @@ let appReferences  =
 let allPackageFiles = [ "./build/Dale.dll" ]
 
 // version info
-let version = "0.0.9"
+let version = "0.2.34"
 
 let dependencies =
   Paket.GetDependenciesForReferencesFile "./src/Dale/paket.references"
@@ -56,7 +56,7 @@ Target "CreatePackage" (fun _ ->
       Dependencies = dependencies
       AccessKey = ""
       PublishUrl = "nuget.org"
-      Publish = false })
+      Publish = true })
     "./Delegate.AuditLogExporter.nuspec"
 )
 
