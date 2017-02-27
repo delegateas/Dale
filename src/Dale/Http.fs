@@ -8,7 +8,7 @@ module Http =
   open Dale.Storage
 
   type Handler = HttpRequestMessage -> HttpResponseMessage
-  exception ExportError of string
+  exception ExportException of string
 
   let collectBatches(req :HttpRequestMessage) =
     let body = req.Content.ReadAsStringAsync().Result

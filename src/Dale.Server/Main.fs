@@ -51,7 +51,8 @@ let main argv =
       ClientSecret = Environment.GetEnvironmentVariable("ClientSecret");
       AzureConnectionString = Environment.GetEnvironmentVariable("AzureConnectionString");
       AzureQueueName = "dale-auditeventqueue";
-      RedactedFields = Set.ofArray [||]; }
+      RedactedFields = Set.ofArray [||];
+      PartiallyRedactedFields = Set.ofArray [||]; }
 
   let exporter = new Dale.Exporter(conf)
   let server = listener exporter.AsyncHandler

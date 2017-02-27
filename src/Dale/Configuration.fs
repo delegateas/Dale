@@ -5,8 +5,9 @@ type Configuration =
     ClientId :string
     ClientSecret :string
     AzureConnectionString :string
-    AzureQueueName :string 
-    RedactedFields :Set<string> }
+    AzureQueueName :string
+    RedactedFields :Set<string>
+    PartiallyRedactedFields :Set<string> }
 
 module Config =
   let Create(tenant,clientid,clientsecret,conn,queueName,(fieldsCSV :string)) =
@@ -15,4 +16,5 @@ module Config =
       ClientSecret = clientsecret;
       AzureConnectionString = conn;
       AzureQueueName = queueName;
-      RedactedFields = Set.ofArray (fieldsCSV.Split(',')) }
+      RedactedFields = Set.ofArray (fieldsCSV.Split(','));
+      PartiallyRedactedFields = Set.ofArray (fieldsCSV.Split(',')) }

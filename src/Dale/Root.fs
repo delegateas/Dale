@@ -9,7 +9,11 @@ open System.Net
 
 type Exporter(configuration :Dale.Configuration) =
 
-  let redact = redactJson configuration.RedactedFields
+  let fullRedact =
+   redactJson fullRedaction configuration.RedactedFields
+
+  let partialRedact =
+   redactJson partialRedaction configuration.PartiallyRedactedFields
 
   let account = fetchAccount configuration.AzureConnectionString
 
@@ -22,19 +26,19 @@ type Exporter(configuration :Dale.Configuration) =
   let filterContent content =
     match content with
     | Some c -> Some { ContentUri = c.ContentUri;
-                       Json = redact c.Json }  
+                       Json = (fullRedact >> partialRedact) c.Json }
     | None -> None
 
   let fetchAuthToken' =
     fetchAuthToken configuration.Tenant configuration.ClientId configuration.ClientSecret
 
   let doExport (batch :string) =
-    let token = fetchAuthToken' 
+    let token = fetchAuthToken'
 
     let fetchBatchWithToken = fun (batch :string) ->
       match token with
       | Some t -> (fetchBatch t batch)
-      | None -> None 
+      | None -> None
 
     batch
     |> fetchBatchWithToken
@@ -60,8 +64,8 @@ type Exporter(configuration :Dale.Configuration) =
   member this.ExportWithException batch =
     let res = doExport batch
     match res with
-    | Some r -> (r |> Array.map(sprintf "%A")) 
-    | None -> raise (ExportError("Unable to persist Audit Events."))
+    | Some r -> (r |> Array.map(sprintf "%A"))
+    | None -> raise (ExportException("Unable to persist Audit Events."))
 
   member this.Handler = wrappedAuditHandler
 

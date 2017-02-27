@@ -1,35 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Dale", "src\Dale\Dale.fsproj", "{7AB0A151-49FA-4C7F-9911-DA6672643D3A}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Dale.Server", "src\Dale.Server\Dale.Server.fsproj", "{84992845-8E38-41B6-A3C0-6B9B7CAB7284}"
 EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Dale-master", ".", "{8345D4E9-0933-42FD-9C19-AA1B82DA4F05}"
-	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
-		Debug.AspNetCompiler.VirtualPath = "/localhost_2605"
-		Debug.AspNetCompiler.PhysicalPath = "..\Dale\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_2605\"
-		Debug.AspNetCompiler.Updateable = "true"
-		Debug.AspNetCompiler.ForceOverwrite = "true"
-		Debug.AspNetCompiler.FixedNames = "false"
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/localhost_2605"
-		Release.AspNetCompiler.PhysicalPath = "..\Dale\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_2605\"
-		Release.AspNetCompiler.Updateable = "true"
-		Release.AspNetCompiler.ForceOverwrite = "true"
-		Release.AspNetCompiler.FixedNames = "false"
-		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "2605"
-		SlnRelativePath = "..\Dale\"
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E59E3E69-B57A-4454-8AB9-2415D7E8653F}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		.travis.yml = .travis.yml
 		build.cmd = build.cmd
 		build.fsx = build.fsx
 		build.sh = build.sh
@@ -54,10 +37,6 @@ Global
 		{84992845-8E38-41B6-A3C0-6B9B7CAB7284}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{84992845-8E38-41B6-A3C0-6B9B7CAB7284}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{84992845-8E38-41B6-A3C0-6B9B7CAB7284}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8345D4E9-0933-42FD-9C19-AA1B82DA4F05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8345D4E9-0933-42FD-9C19-AA1B82DA4F05}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8345D4E9-0933-42FD-9C19-AA1B82DA4F05}.Release|Any CPU.ActiveCfg = Debug|Any CPU
-		{8345D4E9-0933-42FD-9C19-AA1B82DA4F05}.Release|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
