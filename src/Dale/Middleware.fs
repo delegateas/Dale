@@ -27,7 +27,7 @@ module Middleware =
       let valid =
         json.AsArray()
         |> Array.map (fun i ->
-                        not (isNull (i.GetProperty("contentUri").AsString())))
+                        not ((i.GetProperty("contentUri").AsString()) = null))
         |> Array.reduce (&&)
       match valid with
         | true -> inner req

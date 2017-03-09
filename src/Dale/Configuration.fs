@@ -10,11 +10,11 @@ type Configuration =
     PartiallyRedactedFields :Set<string> }
 
 module Config =
-  let Create(tenant,clientid,clientsecret,conn,queueName,(fieldsCSV :string)) =
+  let Create(tenant,clientid,clientsecret,conn,queueName,(fieldsCSV :string),(partialFieldsCSV :string)) =
     { Tenant = tenant;
       ClientId = clientid;
       ClientSecret = clientsecret;
       AzureConnectionString = conn;
       AzureQueueName = queueName;
       RedactedFields = Set.ofArray (fieldsCSV.Split(','));
-      PartiallyRedactedFields = Set.ofArray (fieldsCSV.Split(',')) }
+      PartiallyRedactedFields = Set.ofArray (partialFieldsCSV.Split(',')) }

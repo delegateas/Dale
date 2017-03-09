@@ -61,6 +61,9 @@ type Exporter(configuration :Dale.Configuration) =
     |> isValidation
     |> methodAllowed
 
+  member this.QueueBatches req =
+    queueBatches req
+
   member this.ExportWithException batch =
     let res = doExport batch
     match res with

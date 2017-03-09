@@ -7,7 +7,7 @@ open System.Text.RegularExpressions
 module JsonRedactor =
 
   let (|RegExp|_|) pattern input =
-    if isNull input then None
+    if input = null then None
     else
       let m = Regex.Match(input, pattern, RegexOptions.Compiled)
       if m.Success then Some [for x in m.Groups -> x]

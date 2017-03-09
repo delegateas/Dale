@@ -9,6 +9,7 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Dale.Server", "src\Dale.Ser
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E59E3E69-B57A-4454-8AB9-2415D7E8653F}"
 	ProjectSection(SolutionItems) = preProject
+		.deployment = .deployment
 		.editorconfig = .editorconfig
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore

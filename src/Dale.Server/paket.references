@@ -1,5 +1,7 @@
 FSharp.Core
+Suave
 Microsoft.AspNet.WebApi.Core
 Microsoft.AspNet.WebApi.Client
 Microsoft.AspNet.WebApi.SelfHost
 Microsoft.AspNet.WebApi.Tracing
+FSharp.Configuration
