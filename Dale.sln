@@ -10,19 +10,24 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E59E3E69-B57A-4454-8AB9-2415D7E8653F}"
 	ProjectSection(SolutionItems) = preProject
 		.deployment = .deployment
+		.do-release.sh = .do-release.sh
 		.editorconfig = .editorconfig
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
 		.travis.yml = .travis.yml
+		azuredeploy.json = azuredeploy.json
 		build.cmd = build.cmd
 		build.fsx = build.fsx
 		build.sh = build.sh
 		paket.dependencies = paket.dependencies
 		paket.lock = paket.lock
+		README.md = README.md
 		subscribe.cmd = subscribe.cmd
 		subscribe.fsx = subscribe.fsx
 		subscribe.sh = subscribe.sh
 	EndProjectSection
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Dale.QueueConsumer", "src\Dale.QueueConsumer\Dale.QueueConsumer.fsproj", "{ED6D2B10-B879-4832-B0B9-5A8E6949D567}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,14 +35,18 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{7AB0A151-49FA-4C7F-9911-DA6672643D3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7AB0A151-49FA-4C7F-9911-DA6672643D3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7AB0A151-49FA-4C7F-9911-DA6672643D3A}.Debug|Any CPU.ActiveCfg = Release|Any CPU
+		{7AB0A151-49FA-4C7F-9911-DA6672643D3A}.Debug|Any CPU.Build.0 = Release|Any CPU
 		{7AB0A151-49FA-4C7F-9911-DA6672643D3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7AB0A151-49FA-4C7F-9911-DA6672643D3A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{84992845-8E38-41B6-A3C0-6B9B7CAB7284}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{84992845-8E38-41B6-A3C0-6B9B7CAB7284}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84992845-8E38-41B6-A3C0-6B9B7CAB7284}.Debug|Any CPU.ActiveCfg = Release|Any CPU
+		{84992845-8E38-41B6-A3C0-6B9B7CAB7284}.Debug|Any CPU.Build.0 = Release|Any CPU
 		{84992845-8E38-41B6-A3C0-6B9B7CAB7284}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{84992845-8E38-41B6-A3C0-6B9B7CAB7284}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED6D2B10-B879-4832-B0B9-5A8E6949D567}.Debug|Any CPU.ActiveCfg = Release|Any CPU
+		{ED6D2B10-B879-4832-B0B9-5A8E6949D567}.Debug|Any CPU.Build.0 = Release|Any CPU
+		{ED6D2B10-B879-4832-B0B9-5A8E6949D567}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED6D2B10-B879-4832-B0B9-5A8E6949D567}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

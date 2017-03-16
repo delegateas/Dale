@@ -1,0 +1,121 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "collation": {
+      "type": "string"
+    },
+    "serviceplanSKU": {
+      "type": "string",
+      "defaultValue": "Standard",
+      "allowedValues": [
+        "Free",
+        "Shared",
+        "Basic",
+        "Standard",
+        "Premium"
+      ]
+    },
+    "serviceplanWorkerSize": {
+      "type": "string",
+      "allowedValues": [
+        "0",
+        "1",
+        "2"
+      ],
+      "defaultValue": "0"
+    },
+    "ClientId": { "type": "string" },
+    "ClientSecret": { "type": "string" },
+    "Tenant": { "type": "string" },
+    "AzureDashBoard":  fjkdlasjfasl
+    "AzureConnectionString": {
+      "type": "string",
+      "defaultValue": "[reference(variables('vDefaultStorageAccount'), '2016-05-15').defaultStorageAccount]"
+    },
+    "AzureQueueName": {
+      "type": "string",
+      "defaultValue": "dale-auditqueue"
+    },
+    "RedactedFields": {
+      "type": "string",
+      "defaultValue": "Subject,SourceFileName,Item,ItemId"
+    },
+    "PartiallyRedactedFields": {
+      "type": "string",
+      "defaultValue": "Object,ObjectId"
+    }
+  },
+  "variables": {
+    "serviceplanName": "[concat('dgauditlogexporterfarm',uniqueString(resourceGroup().id))]",
+    "webappName": "[concat('dgauditlogexporter', uniqueString(resourceGroup().id))]",
+    "NotificationURI": "[concat('https://',variables('webappName'),'azurewebsites.net/api/notify')]",
+    "vDefaultStorageAccount": "[string(resourceId(resourceGroup().name, 'Microsoft.Web/sites/', variables('webappName')))]"
+  },
+  "resources": [
+    {
+      "name": "[variables('serviceplanName')]",
+      "type": "Microsoft.Web/serverfarms",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2014-06-01",
+      "properties": {
+        "name": "[variables('serviceplanName')]",
+        "sku": "[parameters('serviceplanSKU')]",
+        "workerSize": "[parameters('serviceplanWorkerSize')]",
+        "numberOfWorkers": 1
+      }
+    },
+    {
+      "name": "[variables('webappName')]",
+      "type": "Microsoft.Web/sites",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2015-08-01",
+      "dependsOn": [
+        "[concat('Microsoft.Web/serverfarms/', variables('serviceplanName'))]"
+      ],
+      "tags": {
+        "[concat('hidden-related:', resourceGroup().id, '/providers/Microsoft.Web/serverfarms/', variables('serviceplanName'))]": "Resource",
+        "displayName": "webapp"
+      },
+      "properties": {
+        "name": "[variables('webappName')]",
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms/', variables('serviceplanName'))]"
+      },
+      "resources": [
+        {
+          "apiVersion": "2015-08-01",
+          "name": "web",
+          "type": "sourcecontrols",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/Sites', parameters('siteName'))]"
+          ],
+          "properties": {
+            "RepoUrl": "[parameters('repoURL')]",
+            "branch": "[parameters('branch')]",
+            "IsManualIntegration": true
+          }
+        },
+        {
+          "name": "appsettings",
+          "type": "config",
+          "apiVersion": "2015-08-01",
+          "dependsOn": [
+            "[concat('Microsoft.Web/sites/', variables('webappName'))]"
+          ],
+          "tags": {
+            "displayName": "appsettings"
+          },
+          "properties": {
+            "AzureConnectionString": "[parameters('AzureConnectionString')]",
+            "ClientId": "[parameters('ClientId')]",
+            "ClientSecret": "[parameters('ClientSecret')]",
+            "Tenant": "[parameters('Tenant')]",
+            "AzureQueueName": "[parameters('AzureQueueName')]",
+            "RedactedFields": "[parameters('RedactedFields')]",
+            "PartiallyRedactedFields": "[parameters('PartiallyRedactedFields')]"
+          }
+        }
+      ]
+    }
+  ]
+}
