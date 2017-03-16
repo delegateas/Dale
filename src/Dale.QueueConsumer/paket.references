@@ -1,0 +1,4 @@
+FSharp.Core
+Microsoft.Azure.WebJobs
+Microsoft.Azure.WebJobs.Core
+Microsoft.Web.WebJobs.Publish

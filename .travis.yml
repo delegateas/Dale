@@ -7,3 +7,10 @@ mono:
 
 script: 
 - ./build.sh
+
+after_success:
+  - export GIT_TAG=release-v$TRAVIS_BUILD_NUMBER-$(date -u "+%Y-%m-%d")
+  - ./.do-release.sh 
+  branches:
+    only:
+      - master

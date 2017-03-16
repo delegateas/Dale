@@ -10,5 +10,10 @@ nuget Microsoft.AspNet.WebApi.Client
 nuget Microsoft.AspNet.WebApi.Core
 nuget Microsoft.AspNet.WebApi.SelfHost
 nuget Microsoft.AspNet.WebApi.Tracing
+nuget Microsoft.Azure.WebJobs
+nuget Microsoft.Azure.WebJobs.Core
+nuget Microsoft.WindowsAzure.ConfigurationManager
+nuget MSBuild.Microsoft.VisualStudio.Web.targets
+nuget Microsoft.Web.WebJobs.Publish
 nuget Nuget.CommandLine
 nuget Suave

@@ -4,4 +4,5 @@ Microsoft.AspNet.WebApi.Core
 Microsoft.AspNet.WebApi.Client
 Microsoft.AspNet.WebApi.SelfHost
 Microsoft.AspNet.WebApi.Tracing
+MSBuild.Microsoft.VisualStudio.Web.targets
 FSharp.Configuration

@@ -3,24 +3,39 @@
 #r "./packages/FAKE/tools/FakeLib.dll"
 
 open Fake
+open Fake.Azure
+open Fake.Azure.WebJobs
+open System
+open System.IO
 
-// Directories
+let webappProj = "./src/Dale.Server/Dale.Server.fsproj"
 let buildDir  = "./build/"
 let deployDir = "./deploy/"
 let packagingDir = "./pkg/"
 
-// Filesets
 let appReferences  =
     !! "/**/*.csproj"
     ++ "/**/*.fsproj"
 let allPackageFiles = [ "./build/Dale.dll" ]
 
 // version info
-let version = "0.2.34"
+let version = "1.1.0"
+
+let deploymentPackage = "Dale.WebApp." + version + ".zip"
 
 let dependencies =
   Paket.GetDependenciesForReferencesFile "./src/Dale/paket.references"
   |> Array.toList
+
+Target "BuildSolution" (fun _ ->
+    webappProj
+    |> MSBuildHelper.build (fun defaults ->
+        { defaults with
+            Verbosity = Some Minimal
+            Targets = [ "Build" ]
+            Properties = [ "Configuration", "Release"
+                           "OutputPath", Kudu.deploymentTemp ] })
+    |> ignore)
 
 // Targets
 Target "Clean" (fun _ ->
@@ -28,16 +43,50 @@ Target "Clean" (fun _ ->
 )
 
 Target "Build" (fun _ ->
-    // compile all projects below src/app/
-    MSBuildDebug buildDir "Build" appReferences
-    |> Log "AppBuild-Output: "
-)
+    webappProj
+    |> MSBuildHelper.build (fun defaults ->
+        { defaults with
+            Verbosity = Some Diagnostic
+            Targets = [ "Build" ]
+            Properties = [ "Configuration", "Release"
+                           "OutputPath", buildDir ] })
+    |> ignore)
 
-Target "Deploy" (fun _ ->
+Target "Zip" (fun _ ->
     !! (buildDir + "/**/*.*")
     -- "*.zip"
-    |> Zip buildDir (deployDir + "ApplicationName." + version + ".zip")
+    |> Zip buildDir (deployDir + deploymentPackage)
 )
+
+Target "Unzip" (fun _ ->
+    Unzip Kudu.deploymentTemp (deployDir + deploymentPackage)
+)
+
+Target "MSDeploy" (fun _ ->
+  webappProj
+    |> MSBuildHelper.build (fun defaults ->
+        { defaults with
+            Verbosity = Some Minimal
+            Targets = [ "Build" ]
+            Properties = [ "Configuration", "Release"
+                           "DeployOnBuild", "true"
+                           "PublishProfile", "MSDeploy.pubxml"
+                           "ProjectName", "Dale.Server.MSDeploy"
+                           "ConfigurationName", "Release"
+                           "PackageLocation", "../../build/"
+                           "OutDir", "../../build/"] })
+    |> ignore)
+
+Target "StageWebsiteAssets" (fun _ ->
+    let blacklist =
+        [ "typings"
+          ".fs"
+          ".references"
+          "tsconfig.json" ]
+    let shouldInclude (file:string) =
+        blacklist
+        |> Seq.forall(not << file.Contains)
+    Kudu.stageFolder (Path.GetFullPath @"src\Dale.Server\WebHost") shouldInclude)
 
 Target "CreatePackage" (fun _ ->
   // Copy all the package files into a package folder
@@ -60,10 +109,7 @@ Target "CreatePackage" (fun _ ->
     "./Delegate.AuditLogExporter.nuspec"
 )
 
-// Build order
-"Clean"
-  ==> "Build"
-  ==> "Deploy"
+Target "Deploy" Kudu.kuduSync
 
 // start build
 RunTargetOrDefault "Build"
