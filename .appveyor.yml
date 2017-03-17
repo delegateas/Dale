@@ -12,4 +12,4 @@ environment:
 build_script:
 - cmd: build.cmd 
 on_success:
-- ps: ./do-release.ps1
+- ps: ./.do-release.ps1
