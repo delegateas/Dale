@@ -2,6 +2,10 @@
 
 # Post-build script for Travis CI
 
+# Only work on the selected branches:
+if [ "$TRAVIS_BRANCH" != "master" ] && [ "$TRAVIS_BRANCH" != "feature_travis" ]
+  exit
+fi
 # RELEASE becomes part of build artifact, accessible from web service
 printf $GIT_TAG > ./src/Dale.Server/static/RELEASE
 # Generate the package
