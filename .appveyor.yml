@@ -1,0 +1,15 @@
+version: rev{build}
+branches:
+  only:
+  - master
+  - feature_travis
+environment:
+  AZUREBLOBSAS:
+    secure: mCpi23YLP7dnkKsJrXASXwX1MO/U7nY/LmcyneS8BEZFJ0OkEKnCByAaNeuSDvXA1pfBRLPJjfeOWuifkqvS3pBqrU0Zb+kTalSsTiw+ft8eewihRJP7QWI+aTGf3JdbUQUgVm6OnistlvBM8smpBAl6Y6SRmirE9WivD2ew3k7K0YughQexZfoKuWe/nuSvW71lkjxmtDxM9PaTso6/mg==
+  AZUREBLOBURL: https://dgdalepublicdeployments.blob.core.windows.net/releases/
+  GITHUBKEY:
+    secure: +samWdZ5vtbYvRsOGq6HkPTmUB+5pLHjFhoU+0rn0bL7oVzxrQ3Ws5cCBtqGAx+t
+build_script:
+- cmd: build.cmd 
+on_success:
+- ps: ./do-release.ps1

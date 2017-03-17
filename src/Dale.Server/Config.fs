@@ -4,11 +4,12 @@ module Config =
   open System
 
   let LoadConfigValue v =
+    let appsettings = new Configuration.AppSettingsReader()
     let ret =
       match Environment.GetEnvironmentVariable("APPSETTING_" + v) with
-      | "" -> match Environment.GetEnvironmentVariable(v) with
-              | "" -> Configuration.AppSettingsReader().GetValue(v, typeof<string>).ToString()
-              | s -> s
+      | null -> match Environment.GetEnvironmentVariable(v) with
+                | null -> appsettings.GetValue(v, typeof<string>).ToString()
+                | s -> s
       | s -> s
     match ret with
     | null -> String.Empty
