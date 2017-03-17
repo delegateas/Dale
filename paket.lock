@@ -46,3 +46,7 @@ NUGET
       Microsoft.Data.OData (>= 5.8.2)
       Microsoft.Data.Services.Client (>= 5.8.2)
       Newtonsoft.Json (>= 6.0.8)
+GIT
+  remote: https://github.com/delegateas/nuget-webtargets.git
+     (3e4c97e59f224e2bd9a9d56058624e71cf6b2d56)
+      path: /source/

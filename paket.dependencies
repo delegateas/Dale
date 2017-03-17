@@ -13,7 +13,10 @@ nuget Microsoft.AspNet.WebApi.Tracing
 nuget Microsoft.Azure.WebJobs
 nuget Microsoft.Azure.WebJobs.Core
 nuget Microsoft.WindowsAzure.ConfigurationManager
-nuget MSBuild.Microsoft.VisualStudio.Web.targets
 nuget Microsoft.Web.WebJobs.Publish
 nuget Nuget.CommandLine
 nuget Suave
+
+git https://github.com/delegateas/nuget-webtargets.git master Packages: /source/
+
+nuget MSBuild.Microsoft.VisualStudio.Web.targets
