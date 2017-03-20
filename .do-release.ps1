@@ -27,11 +27,11 @@ git config --global user.name "Appveyor CI"
 git add -f ./src/Dale.Server/static/RELEASE
 git commit -m "Prepare release $env:APPVEYOR_BUILD_NUMBER"
 git tag $GIT_TAG -a -m "Generated tag from Appveyor build $env:APPVEYOR_BUILD_NUMBER"
-git push https://$env:GITHUBKEY@github.com/delegateas/dale $GIT_TAG
+git push "https://$env:GITHUBKEY@github.com/delegateas/dale" $GIT_TAG
 
 Write-Host "Creating GitHub release ... "
 $resp = curl -Method Post -Headers @{"Content-Type" = "application/json"} -Body '{"tag_name": "$GIT_TAG", "name": "$GIT_TAG"}' -Uri https://api.github.com/repos/delegateas/dale/releases?access_token=$GITHUBKEY
-Write-Host "GitHub release: $resp.StatusDescription"
+Write-Host "GitHub release: $($resp.StatusDescription)"
 $apiurl = $resp.Headers.Location
 $uploadurl = $apiurl.Replace("api.github","upload.github")
 
