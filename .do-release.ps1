@@ -1,7 +1,7 @@
 # Post-build script for Appveyor
 
 APPVEYOR_REPO_BRANCH
-if (($env:APPVEYOR_REPO_BRANCH -ne "master") -and ($env:APPVEYOR_REPO_BRANCH -ne "feature_travis"))
+if (($($env:APPVEYOR_REPO_BRANCH) -ne "master") -and ($($env:APPVEYOR_REPO_BRANCH) -ne "feature_travis"))
 {
   Write-Host "$($env:APPVEYOR_REPO_BRANCH) is not a release branch. Exiting ... "
   exit
@@ -30,22 +30,21 @@ git add -f ./src/Dale.Server/static/RELEASE
 git commit -m "Prepare release $($env:APPVEYOR_BUILD_NUMBER)"
 git tag $GIT_TAG -a -m "Generated tag from Appveyor build $($env:APPVEYOR_BUILD_NUMBER)"
 $url = "https://$($env:GITHUBKEY)@github.com/delegateas/dale"
-Write-Host "Targeting: $url"
 git push $url $GIT_TAG
 
 Write-Host "Creating GitHub release ... "
-$resp = curl -Method Post -Headers @{"Content-Type" = "application/json"} -Body '{"tag_name": "$GIT_TAG", "name": "$GIT_TAG"}' -Uri "https://api.github.com/repos/delegateas/dale/releases?access_token=$($env:GITHUBKEY)"
+$resp = curl -Method Post -Headers @{"Content-Type" = "application/json"} -Body "{'tag_name': '$GIT_TAG', 'name': '$GIT_TAG'}" -Uri "https://api.github.com/repos/delegateas/dale/releases?access_token=$($env:GITHUBKEY)"
 Write-Host "GitHub release: $($resp.StatusDescription)"
 $apiurl = $resp.Headers.Location
 $uploadurl = $apiurl.Replace("api.github","upload.github")
 
 Write-Host "Posting release to $uploadurl ... "
-$resp2 = curl -Method POST -Headers @{"Content-Type" = "application/zip"} -InFile ./build/Dale.Server.zip -Uri "$uploadurl?name=Dale.Server.zip&access_token=$($env:GITHUBKEY)"
+$resp2 = curl -Method Post -Headers @{"Content-Type" = "application/zip"} -InFile ./build/Dale.Server.zip -Uri "$uploadurl/assets?name=Dale.Server.zip&access_token=$($env:GITHUBKEY)"
 Write-Host "GitHub upload: $($resp2.StatusDescription)"
 
 
 Write-Host "Posting artifact to Azure Blob storage ... "
-$resp3 = curl -Method POST -Headers @{"Content-Type" = "application/zip"} -InFile ./build/Dale.Server.zip -Uri "$($env:AZUREBLOBURL)/$GIT_TAG/Dale.Server.zip$($env:AZUREBLOBSAS)"
+$resp3 = curl -Method Put -Headers @{"Content-Type" = "application/zip"} -InFile ./build/Dale.Server.zip -Uri "$($env:AZUREBLOBURL)/$GIT_TAG/Dale.Server.zip$($env:AZUREBLOBSAS)"
 Write-Host "Azure blob storage: $($resp3.StatusDescription)"
 
 Write-Host "Release finished."
