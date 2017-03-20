@@ -88,6 +88,9 @@ Target "StageWebsiteAssets" (fun _ ->
         |> Seq.forall(not << file.Contains)
     Kudu.stageFolder (Path.GetFullPath @"src\Dale.Server\WebHost") shouldInclude)
 
+Target "WriteOutVersion" (fun _ ->
+  WriteStringToFile false "VERSION" version)
+
 Target "CreatePackage" (fun _ ->
   // Copy all the package files into a package folder
   CopyFiles packagingDir allPackageFiles
@@ -107,9 +110,10 @@ Target "CreatePackage" (fun _ ->
       PublishUrl = "nuget.org"
       Publish = true })
     "./Delegate.AuditLogExporter.nuspec"
-)
+  )
 
 Target "Deploy" Kudu.kuduSync
+
 
 // start build
 RunTargetOrDefault "Build"
