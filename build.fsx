@@ -46,7 +46,7 @@ Target "Build" (fun _ ->
     webappProj
     |> MSBuildHelper.build (fun defaults ->
         { defaults with
-            Verbosity = Some Diagnostic
+            Verbosity = Some Minimal
             Targets = [ "Build" ]
             Properties = [ "Configuration", "Release"
                            "OutputPath", buildDir ] })
