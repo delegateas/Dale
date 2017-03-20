@@ -8,7 +8,7 @@ if (($env:APPVEYOR_REPO_BRANCH -ne "master") -and ($env:APPVEYOR_REPO_BRANCH -ne
 }
 
 $date = Get-Date -Format "yyyy-MM-dd"
-$GIT_TAG="$($env:APPVEYOR_BUILD_NUMBER)_$date"
+$GIT_TAG="rev$($env:APPVEYOR_BUILD_NUMBER)_$date"
 Write-Host "Tag is $($GIT_TAG)."
 # RELEASE becomes part of build artifact, accessible from web service
 Write-Host "Patching RELEASE file ... "
@@ -27,7 +27,7 @@ git config --global user.name "Appveyor CI"
 git add -f ./src/Dale.Server/static/RELEASE
 git commit -m "Prepare release $($env:APPVEYOR_BUILD_NUMBER)"
 git tag $GIT_TAG -a -m "Generated tag from Appveyor build $($env:APPVEYOR_BUILD_NUMBER)"
-git push "https://$env:GITHUBKEY@github.com/delegateas/dale" $GIT_TAG
+git push "https://$($env:GITHUBKEY)@github.com/delegateas/dale" $GIT_TAG
 
 Write-Host "Creating GitHub release ... "
 $resp = curl -Method Post -Headers @{"Content-Type" = "application/json"} -Body '{"tag_name": "$GIT_TAG", "name": "$GIT_TAG"}' -Uri https://api.github.com/repos/delegateas/dale/releases?access_token=$GITHUBKEY
