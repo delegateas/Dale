@@ -18,6 +18,8 @@ $GIT_TAG | Out-File -Append ./src/Dale.Server/static/RELEASE
 $env:APPVEYOR_REPO_COMMIT | Out-File -Append ./src/Dale.Server/static/RELEASE
 $env:APPVEYOR_REPO_COMMIT_TIMESTAMP | Out-File -Append ./src/Dale.Server/static/RELEASE
 Write-Host "RELEASE file patched."
+Write-Host "It Contains: "
+cat ./src/Dale.Server/static/RELEASE
 
 Write-Host "Starting MSDeploy target ... "
 ./build.cmd MSDeploy
@@ -33,7 +35,7 @@ $url = "https://$($env:GITHUBKEY)@github.com/delegateas/dale"
 git push $url $GIT_TAG
 
 Write-Host "Creating GitHub release ... "
-$resp = curl -Method Patch -Headers @{"Content-Type" = "application/json"} -Body "{`"tag_name`": `"$GIT_TAG`", `"name`": `"$REL_TAG`"}" -Uri "https://api.github.com/repos/delegateas/dale/releases?access_token=$($env:GITHUBKEY)"
+$resp = curl -Method Post -Headers @{"Content-Type" = "application/json"} -Body "{`"tag_name`": `"$GIT_TAG`", `"name`": `"$REL_TAG`"}" -Uri "https://api.github.com/repos/delegateas/dale/releases?access_token=$($env:GITHUBKEY)"
 Write-Host "GitHub release: $($resp.StatusDescription)"
 $apiurl = $resp.Headers.Location
 $uploadurl = $apiurl.Replace("api.github","upload.github")
@@ -45,7 +47,11 @@ Write-Host "GitHub upload: $($resp2.StatusDescription)"
 
 Write-Host "Posting artifact to Azure Blob storage ... "
 $size = $(Get-Item ./build/Dale.Server.zip).length
-$resp3 = curl -Method Put -Headers @{"Content-Type" = "application/zip"; "Content-Length" = $size; "Host" = "dgdalepublicdeployments.blob.core.windows.net"} -InFile ./build/Dale.Server.zip -Uri "$($env:AZUREBLOBURL)/$GIT_TAG/Dale.Server.zip$($env:AZUREBLOBSAS)"
+$azureHeaders = @{"Content-Type" = "application/zip";
+                  "Content-Length" = $size;}
+$azureuri = "$($env:AZUREBLOBURL)/$GIT_TAG/Dale.Server.zip$($env:AZUREBLOBSAS)" 
+Write-Host $azureuri
+$resp3 = curl -Method Put -Headers $azureheaders -InFile ./build/Dale.Server.zip -Uri $azureuri 
 Write-Host "Azure blob storage: $($resp3.StatusDescription)"
 
 Write-Host "Release finished."
