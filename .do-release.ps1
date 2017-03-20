@@ -1,6 +1,5 @@
 # Post-build script for Appveyor
 
-APPVEYOR_REPO_BRANCH
 if (($($env:APPVEYOR_REPO_BRANCH) -ne "master") -and ($($env:APPVEYOR_REPO_BRANCH) -ne "feature_travis"))
 {
   Write-Host "$($env:APPVEYOR_REPO_BRANCH) is not a release branch. Exiting ... "
@@ -44,7 +43,8 @@ Write-Host "GitHub upload: $($resp2.StatusDescription)"
 
 
 Write-Host "Posting artifact to Azure Blob storage ... "
-$resp3 = curl -Method Put -Headers @{"Content-Type" = "application/zip"} -InFile ./build/Dale.Server.zip -Uri "$($env:AZUREBLOBURL)/$GIT_TAG/Dale.Server.zip$($env:AZUREBLOBSAS)"
+$size = $(Get-Item ./build/Dale.Server.zip).length
+$resp3 = curl -Method Put -Headers @{"Content-Type" = "application/zip"; "Content-Length" = $size} -InFile ./build/Dale.Server.zip -Uri "$($env:AZUREBLOBURL)/$GIT_TAG/Dale.Server.zip$($env:AZUREBLOBSAS)"
 Write-Host "Azure blob storage: $($resp3.StatusDescription)"
 
 Write-Host "Release finished."
