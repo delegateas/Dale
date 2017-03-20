@@ -19,7 +19,7 @@ Write-Host "RELEASE file patched."
 
 Write-Host "Starting MSDeploy target ... "
 ./build.cmd MSDeploy
-Write_host "MSDeploy target finished."
+Write-host "MSDeploy target finished."
 
 Write-Host "Preparing new git tag ... "
 git config --global user.email "builds@appveyor.com"
