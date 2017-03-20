@@ -33,7 +33,7 @@ $url = "https://$($env:GITHUBKEY)@github.com/delegateas/dale"
 git push $url $GIT_TAG
 
 Write-Host "Creating GitHub release ... "
-$resp = curl -Method Post -Headers @{"Content-Type" = "application/json"} -Body "{'tag_name': '$GIT_TAG', 'name': '$GIT_TAG'}" -Uri "https://api.github.com/repos/delegateas/dale/releases?access_token=$($env:GITHUBKEY)"
+$resp = curl -Method Post -Headers @{"Content-Type" = "application/json"} -Body "{`"tag_name`": `"$GIT_TAG`", `"name`": `"$GIT_TAG`"}" -Uri "https://api.github.com/repos/delegateas/dale/releases?access_token=$($env:GITHUBKEY)"
 Write-Host "GitHub release: $($resp.StatusDescription)"
 $apiurl = $resp.Headers.Location
 $uploadurl = $apiurl.Replace("api.github","upload.github")
