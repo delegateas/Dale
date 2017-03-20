@@ -6,10 +6,11 @@ if (($($env:APPVEYOR_REPO_BRANCH) -ne "master") -and ($($env:APPVEYOR_REPO_BRANC
   exit
 }
 
-$date = Get-Date -Format "yyyy-MM-dd"
 ./build.cmd WriteOutVersion # Writes pkg version out to file 'VERSION'
 $v = cat VERSION 
-$GIT_TAG="$v.$($env:APPVEYOR_BUILD_NUMBER)_$date"
+$date = Get-Date -Format "yyyy-MM-dd"
+$REL_TAG="$v.$($env:APPVEYOR_BUILD_NUMBER)"
+$GIT_TAG="$($REL_TAG)_$date"
 Write-Host "Tag is $($GIT_TAG)."
 # RELEASE becomes part of build artifact, accessible from web service
 Write-Host "Patching RELEASE file ... "
@@ -32,7 +33,7 @@ $url = "https://$($env:GITHUBKEY)@github.com/delegateas/dale"
 git push $url $GIT_TAG
 
 Write-Host "Creating GitHub release ... "
-$resp = curl -Method Post -Headers @{"Content-Type" = "application/json"} -Body "{`"tag_name`": `"$GIT_TAG`", `"name`": `"$GIT_TAG`"}" -Uri "https://api.github.com/repos/delegateas/dale/releases?access_token=$($env:GITHUBKEY)"
+$resp = curl -Method Patch -Headers @{"Content-Type" = "application/json"} -Body "{`"tag_name`": `"$GIT_TAG`", `"name`": `"$REL_TAG`"}" -Uri "https://api.github.com/repos/delegateas/dale/releases?access_token=$($env:GITHUBKEY)"
 Write-Host "GitHub release: $($resp.StatusDescription)"
 $apiurl = $resp.Headers.Location
 $uploadurl = $apiurl.Replace("api.github","upload.github")
@@ -44,7 +45,7 @@ Write-Host "GitHub upload: $($resp2.StatusDescription)"
 
 Write-Host "Posting artifact to Azure Blob storage ... "
 $size = $(Get-Item ./build/Dale.Server.zip).length
-$resp3 = curl -Method Put -Headers @{"Content-Type" = "application/zip"; "Content-Length" = $size} -InFile ./build/Dale.Server.zip -Uri "$($env:AZUREBLOBURL)/$GIT_TAG/Dale.Server.zip$($env:AZUREBLOBSAS)"
+$resp3 = curl -Method Put -Headers @{"Content-Type" = "application/zip"; "Content-Length" = $size; "Host" = "dgdalepublicdeployments.blob.core.windows.net"} -InFile ./build/Dale.Server.zip -Uri "$($env:AZUREBLOBURL)/$GIT_TAG/Dale.Server.zip$($env:AZUREBLOBSAS)"
 Write-Host "Azure blob storage: $($resp3.StatusDescription)"
 
 Write-Host "Release finished."
