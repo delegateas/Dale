@@ -50,7 +50,8 @@
     "webappName": "[concat('dgauditlogexporter', uniqueString(resourceGroup().id))]",
     "NotificationURI": "[concat('https://',variables('webappName'),'azurewebsites.net/api/notify')]",
     "vDefaultStorageAccount": "[string(resourceId(resourceGroup().name, 'Microsoft.Web/sites/', variables('webappName')))]",
-    "packageUri":  ""
+    "revTag": "rev8-2017-03-20",
+    "packageUri": "https://dgdalepublicdeployments.blob.core.windows.net/releases/[variables('revTag')]/Dale.Server.zip"
   },
   "resources": [
     {
